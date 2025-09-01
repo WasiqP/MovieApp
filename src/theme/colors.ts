@@ -9,14 +9,15 @@ export const palette = {
 };
 
 export const theme = {
-  background: palette.black,
-  backgroundAlt: palette.gray,
+  // Light, clean onboarding aesthetic
+  background: palette.white,
+  backgroundAlt: '#F5F5F5',
   primary: palette.red,
   primaryAlt: palette.redAlt,
-  text: palette.white,
-  textDim: 'rgba(255,255,255,0.65)',
-  border: palette.grayLight,
-  card: palette.grayMid,
+  text: palette.black,
+  textDim: 'rgba(0,0,0,0.55)',
+  border: '#E2E2E2',
+  card: palette.white,
 };
 
 export type AppTheme = typeof theme;
