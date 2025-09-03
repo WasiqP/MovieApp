@@ -7,31 +7,29 @@ import { RootStackParamList } from '../../App.tsx';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-interface Anime { id: string; title: string; image: string; badge?: string; rating?: string; name?: string }
-
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+interface Movie { id: string; title: string; image: string; badge?: string; rating?: string; name?: string }
 
 const popularMock = [
-  { id: '1', title: 'One Piece', image: 'https://placehold.co/160x220/png', badge: '#1' },
-  { id: '2', title: 'Boruto: Naruto Next...', image: 'https://placehold.co/160x220/png', badge: '#2' },
-  { id: '3', title: 'Demon Slayer', image: 'https://placehold.co/160x220/png', badge: '#3' },
-  { id: '4', title: 'Jujutsu Kaisen', image: 'https://placehold.co/160x220/png', badge: '#4' },
+  { id: '1', title: 'Oppenheimer', image: 'https://placehold.co/160x220/png', badge: '#1' },
+  { id: '2', title: 'Spider-Man: Across...', image: 'https://placehold.co/160x220/png', badge: '#2' },
+  { id: '3', title: 'Barbie', image: 'https://placehold.co/160x220/png', badge: '#3' },
+  { id: '4', title: 'Guardians of the Galaxy', image: 'https://placehold.co/160x220/png', badge: '#4' },
 ];
 
 const latestMock = Array.from({ length: 12 }).map((_, i) => ({
   id: String(i + 1),
-  title: ['Episode 2', 'Episode 6.65', 'Episode 13'][i % 3],
+  title: ['The Batman', 'Top Gun: Maverick', 'Dune'][i % 3],
   image: 'https://placehold.co/120x160/png',
   rating: '8.65',
-  name: ['Slime Tensei', 'Shin Samurai - den Yaiba', 'Nazotoki wa Dinner'][i % 3],
+  name: ['Action', 'Drama', 'Sci-Fi'][i % 3],
 }));
 
-const genres = ['Fantasy', 'Sci-fi', 'Slice of life', 'Action'];
+const genres = ['Action', 'Drama', 'Comedy', 'Thriller'];
 
-const Home: React.FC<Props> = () => {
+const Home: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const renderPopularItem = ({ item }: { item: Anime }) => (
+  const renderPopularItem = ({ item }: { item: Movie }) => (
     <Pressable onPress={() => navigation.navigate('AnimeDetails', { animeId: String(item.id) })} style={styles.popularCard}>
       <Image source={{ uri: item.image }} style={styles.popularImage} />
       <View style={styles.popularGradient} />
@@ -41,7 +39,7 @@ const Home: React.FC<Props> = () => {
   );
 
   return (
-    <SafeAreaView style={styles.screen}>
+    <SafeAreaView style={styles.screen} edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Greeting */}
         <View style={styles.greetingWrap}>
@@ -81,7 +79,7 @@ const Home: React.FC<Props> = () => {
         </View>
 
         {/* Latest */}
-  <Text style={[styles.sectionTitle, { marginTop: 22 }]}>Hot Picks</Text>
+  <Text style={[styles.sectionTitle, { marginTop: 22 }]}>Trending Movies</Text>
         <View style={styles.latestGrid}>
           {latestMock.map(item => (
             <Pressable key={item.id} style={styles.latestCard} onPress={() => navigation.navigate('AnimeDetails', { animeId: String(item.id) })}>

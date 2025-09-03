@@ -97,6 +97,22 @@ To learn more about React Native, take a look at the following resources:
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
 =======
-# MovieApp
-An Movie Streaming Application Created with React Native TypeScript Node JS 
+# AirCorn
+A Movie Streaming Application Created with React Native TypeScript
+
+AirCorn is a modern movie streaming app that provides users with access to the latest movies, TV shows, and entertainment content. Built with React Native and TypeScript, it offers a smooth and intuitive user experience for discovering and watching movies.
+
+## Features
+- 🎬 Movie Discovery
+- 📱 Cross-platform mobile app
+- 🔍 Search functionality
+- ❤️ Favorites system
+- 👤 User profiles
+- 🎨 Modern UI/UX design
+
+## Tech Stack
+- React Native
+- TypeScript
+- React Navigation
+- TMDB API (planned integration) 
 >>>>>>> e63824dbd16d979118ad7d94c376fdad164f9159

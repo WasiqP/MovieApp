@@ -11,7 +11,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
   const [password, setPassword] = useState('');
   return (
     <View style={styles.screen}>
-      <View style={styles.brandRow}><Text style={styles.brand}><Text style={styles.brandAir}>Air</Text><Text style={styles.brandAnime}>Anime</Text></Text></View>
+      <View style={styles.brandRow}><Text style={styles.brand}><Text style={styles.brandAir}>Air</Text><Text style={styles.brandAnime}>Corn</Text></Text></View>
       <View style={styles.content}>
         <Text style={styles.sub}>Welcome Back</Text>
         <Text style={styles.heading}>Log In</Text>
@@ -32,7 +32,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
             secureTextEntry
             style={styles.input}
         />
-        <Pressable style={styles.primaryBtn} android_ripple={{ color: 'rgba(255,255,255,0.15)' }} onPress={() => navigation.replace('Home')}>
+        <Pressable style={styles.primaryBtn} android_ripple={{ color: 'rgba(255,255,255,0.15)' }} onPress={() => navigation.replace('MainScreen')}>
           <Text style={styles.primaryLabel}>Log In</Text>
         </Pressable>
         <Pressable onPress={() => {}} hitSlop={8}><Text style={styles.forgot}>Forgot Password?</Text></Pressable>

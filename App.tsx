@@ -14,7 +14,11 @@ import GetStarted from './src/onboarding/GetStarted.tsx';
 import Login from './src/authentication/Login.tsx';
 import SignUp from './src/authentication/SignUp.tsx';
 // Main
+import MainScreen from './src/main/MainScreen.tsx';
 import Home from './src/main/Home.tsx';
+import Movies from './src/main/Movies.tsx';
+import Favourites from './src/main/Favourites.tsx';
+import Profile from './src/main/Profile.tsx';
 import AnimeDetails from './src/main/AnimeDetails';
 
 export type RootStackParamList = {
@@ -25,7 +29,11 @@ export type RootStackParamList = {
   Onboarding03: undefined;
   Login: undefined;
   SignUp: undefined;
+  MainScreen: undefined;
   Home: undefined;
+  Movies: undefined;
+  Favourites: undefined;
+  Profile: undefined;
   AnimeDetails: { animeId: string } | undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -44,7 +52,11 @@ const App = () => {
           <Stack.Screen name="Onboarding03" component={Onboarding03} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="SignUp" component={SignUp} />
+          <Stack.Screen name="MainScreen" component={MainScreen} />
           <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Movies" component={Movies} />
+          <Stack.Screen name="Favourites" component={Favourites} />
+          <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="AnimeDetails" component={AnimeDetails} />
         </Stack.Navigator>
       </NavigationContainer>

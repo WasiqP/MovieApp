@@ -11,7 +11,7 @@ const Onboarding02: React.FC<Props> = ({ navigation }) => {
     <OnboardingCard
       Illustration={Onboarding2Svg}
       title="Adaptive HD Quality"
-      description="Enjoy crisp HD, auto-adjusted for your connection. Fast seeks, no buffering—perfect for binging long arcs."
+      description="Enjoy crisp HD, auto-adjusted for your connection. Fast seeks, no buffering—perfect for movie marathons."
       step={2}
       total={3}
       onNext={() => navigation.navigate('Onboarding03')}

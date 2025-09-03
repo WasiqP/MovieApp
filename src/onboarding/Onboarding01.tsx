@@ -10,8 +10,8 @@ const Onboarding01: React.FC<Props> = ({ navigation }) => {
   return (
     <OnboardingCard
       Illustration={Onboarding1Svg}
-      title="Stream Anime Anywhere"
-      description="Watch sub & dub episodes, movies, and trailers across devices. Seamless syncing—pick up right where you left off."
+      title="Stream Movies Anywhere"
+      description="Watch the latest movies, TV shows, and trailers across devices. Seamless syncing—pick up right where you left off."
       step={1}
       total={3}
       onNext={() => navigation.navigate('Onboarding02')}

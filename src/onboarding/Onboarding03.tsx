@@ -10,8 +10,8 @@ const Onboarding03: React.FC<Props> = ({ navigation }) => {
   return (
     <OnboardingCard
       Illustration={Onboarding3Svg}
-      title="Curated For Otakus"
-      description="AI-powered recommendations, seasonal charts & watchlists so you discover new favorites instantly."
+      title="Curated For Movie Lovers"
+      description="AI-powered recommendations, trending charts & watchlists so you discover new favorites instantly."
       step={3}
       total={3}
   onNext={() => navigation.replace('GetStarted')}

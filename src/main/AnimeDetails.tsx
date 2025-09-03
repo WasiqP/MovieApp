@@ -12,12 +12,12 @@ type Props = NativeStackScreenProps<RootStackParamList, 'AnimeDetails'>;
 const sampleCover = 'https://placehold.co/600x900/png';
 const sampleEpisodeThumb = 'https://placehold.co/120x80/png';
 
-const synopsis = `Sakura Haruka tidak mau berurusan dengan orang lemah. Dia hanya tertarik pada yang kuat. Dia baru saja masuk ke SMA Furin, sebuah sekolah...`;
+const synopsis = `The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb during World War II. A gripping biographical drama that explores the moral complexities of scientific discovery...`;
 
-const episodes = Array.from({ length: 8 }).map((_, i) => ({
+const episodes = Array.from({ length: 1 }).map((_, i) => ({
   id: String(i + 1),
-  title: `Episode ${i + 1}`,
-  duration: '24 Min',
+  title: `Full Movie`,
+  duration: '180 Min',
 }));
 
 const AnimeDetails: React.FC<Props> = ({ navigation, route }) => {
@@ -34,13 +34,13 @@ const AnimeDetails: React.FC<Props> = ({ navigation, route }) => {
             <Pressable hitSlop={8}><Text style={styles.navIcon}>♡</Text></Pressable>
           </View>
           <View style={styles.heroBottom}>
-            <Text style={styles.title} numberOfLines={2}>Wind Breaker Season 2</Text>
+            <Text style={styles.title} numberOfLines={2}>Oppenheimer</Text>
             <View style={styles.tagRow}>
-              {['TV', 'Web Manga', 'CloverWorks'].map(t => (
+              {['Movie', 'Biography', 'Christopher Nolan'].map(t => (
                 <View key={t} style={styles.tag}><Text style={styles.tagText}>{t}</Text></View>
               ))}
             </View>
-            <Text style={styles.metaLine}>Action, Delinquents, School</Text>
+            <Text style={styles.metaLine}>Biography, Drama, History</Text>
             <View style={styles.scorePill}><Text style={styles.scoreLabel}>Score</Text><Text style={styles.scoreValue}>8.73</Text></View>
           </View>
         </View>
@@ -49,7 +49,7 @@ const AnimeDetails: React.FC<Props> = ({ navigation, route }) => {
         <View style={styles.bodyCard}>
           <Text style={styles.sectionTitle}>Sinopsis</Text>
           <Text style={styles.synopsis} numberOfLines={4}>{synopsis}<Text style={styles.readMore}> Read More</Text></Text>
-          <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Episode List</Text>
+          <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Watch Options</Text>
           {episodes.map(ep => (
             <View key={ep.id} style={styles.episodeRow}>
               <Image source={{ uri: sampleEpisodeThumb }} style={styles.episodeThumb} />

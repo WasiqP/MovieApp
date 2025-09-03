@@ -27,7 +27,7 @@ const Splash: React.FC<Props> = ({ navigation }) => {
       <Animated.View style={{ opacity: fade, transform: [{ scale }] }}>
         <Logo size={120} />
       </Animated.View>
-  <Animated.Text style={[styles.brand, { color: t.primary, opacity: fade }]}>MovieApp</Animated.Text>
+  <Animated.Text style={[styles.brand, { color: t.primary, opacity: fade }]}>AirCorn</Animated.Text>
     </View>
   );
 };
