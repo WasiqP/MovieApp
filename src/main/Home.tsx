@@ -1,11 +1,12 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TextInput, Pressable, ScrollView } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, FlatList, Image, TextInput, Pressable, ScrollView, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../theme/colors';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App.tsx';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import DrawerMenu from '../components/DrawerMenu';
 
 interface Movie { id: string; title: string; image: string; badge?: string; rating?: string; name?: string }
 
@@ -28,6 +29,33 @@ const genres = ['Action', 'Drama', 'Comedy', 'Thriller'];
 
 const Home: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+
+  useEffect(() => {
+    // Simulate loading time for smooth transition
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 600,
+          useNativeDriver: true,
+        })
+      ]).start();
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [fadeAnim, slideAnim]);
+
+  console.log('Home component rendered, drawerVisible:', drawerVisible);
 
   const renderPopularItem = ({ item }: { item: Movie }) => (
     <Pressable onPress={() => navigation.navigate('AnimeDetails', { animeId: String(item.id) })} style={styles.popularCard}>
@@ -39,16 +67,38 @@ const Home: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={styles.screen} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        {/* Greeting */}
-        <View style={styles.greetingWrap}>
+    <SafeAreaView style={styles.screen} edges={['top']}>
+      {/* Header with menu button */}
+      <View style={styles.topHeader}>
+        <View style={styles.headerLeft}>
           <Text style={styles.greetingLight}>Hello,</Text>
           <Text style={styles.greetingName}>User</Text>
         </View>
-
-        {/* Popular Section */}
-        <Text style={styles.sectionTitle}>Popular</Text>
+        
+        {/* Center Logo */}
+        <View style={styles.headerCenter}>
+          <Text style={styles.logoText}>
+            <Text style={styles.logoAir}>Air</Text>
+            <Text style={styles.logoCorn}>Corn</Text>
+          </Text>
+        </View>
+        
+        <Pressable 
+          style={styles.menuButton} 
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          onPress={() => {
+            console.log('Menu button pressed, setting drawerVisible to true');
+            setDrawerVisible(true);
+          }}
+        >
+          <Text style={styles.menuButtonText}>☰</Text>
+        </Pressable>
+      </View>
+      
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+          {/* Popular Section */}
+          <Text style={styles.sectionTitle}>Popular</Text>
         <FlatList
           horizontal
           data={popularMock}
@@ -88,7 +138,15 @@ const Home: React.FC = () => {
             </Pressable>
           ))}
         </View>
+        </Animated.View>
       </ScrollView>
+      
+      {/* Drawer Menu */}
+      <DrawerMenu 
+        visible={drawerVisible} 
+        onClose={() => setDrawerVisible(false)} 
+        navigation={navigation}
+      />
     </SafeAreaView>
   );
 };
@@ -96,6 +154,52 @@ const Home: React.FC = () => {
 const CARD_RADIUS = 14;
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: theme.background },
+  topHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+  },
+  headerLeft: {
+    flex: 0.8,
+    alignItems: 'flex-start',
+  },
+  headerCenter: {
+    flex: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoText: {
+    fontSize: 22,
+    fontFamily: 'Poppins-Black',
+    letterSpacing: 1,
+  },
+  logoAir: {
+    color: '#000000',
+    fontWeight: "bold"
+  },
+  logoCorn: {
+    color: '#FF0000',
+    fontWeight: "bold"
+  },
+  menuButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#F5F5F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+  },
+  menuButtonText: {
+    fontSize: 18,
+    color: theme.text,
+    fontFamily: 'Poppins-Bold',
+  },
   scroll: { paddingHorizontal: 16, paddingBottom: 40 },
   greetingWrap: { marginTop: 8 },
   greetingLight: { fontSize: 12, color: theme.textDim, fontFamily: 'Poppins-Regular' },

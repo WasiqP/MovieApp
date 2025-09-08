@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TextInput, Pressable, ScrollView } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, FlatList, Image, TextInput, Pressable, ScrollView, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../theme/colors';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -41,6 +41,23 @@ const movieGenres = ['Action', 'Romance', 'Fantasy', 'Drama', 'Comedy', 'Thrille
 
 const Movies: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      })
+    ]).start();
+  }, [fadeAnim, slideAnim]);
 
   const renderTrendingItem = ({ item }: { item: Movie }) => (
     <Pressable 
@@ -61,13 +78,26 @@ const Movies: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={styles.screen} edges={['bottom']}>
+    <SafeAreaView style={styles.screen} edges={['top']}>
+      {/* Header with back button */}
+      <View style={styles.topHeader}>
+        <Pressable 
+          style={styles.backButton} 
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.backButtonText}>← Back</Text>
+        </Pressable>
+        <Text style={styles.topHeaderTitle}>Movies</Text>
+        <View style={styles.placeholder} />
+      </View>
+      
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Movies</Text>
-          <Text style={styles.headerSubtitle}>Discover amazing movies</Text>
-        </View>
+        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+          {/* Header */}
+          {/* <View style={styles.header}>
+            <Text style={styles.headerTitle}>Movies</Text>
+            <Text style={styles.headerSubtitle}>Discover amazing movies</Text>
+          </View> */}
 
         {/* Search */}
         <View style={styles.searchWrap}>
@@ -120,6 +150,7 @@ const Movies: React.FC = () => {
             </Pressable>
           ))}
         </View>
+        </Animated.View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -128,6 +159,33 @@ const Movies: React.FC = () => {
 const CARD_RADIUS = 14;
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: theme.background },
+  topHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+  },
+  backButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: theme.primary,
+    fontFamily: 'Poppins-Medium',
+  },
+  topHeaderTitle: {
+    fontSize: 18,
+    fontFamily: 'Poppins-Bold',
+    fontWeight:"bold",
+    color: theme.text,
+  },
+  placeholder: {
+    width: 60,
+  },
   scroll: { paddingHorizontal: 16, paddingBottom: 40 },
   header: { marginTop: 8, marginBottom: 8 },
   headerTitle: { fontSize: 24, fontFamily: 'Poppins-Bold', color: theme.text },

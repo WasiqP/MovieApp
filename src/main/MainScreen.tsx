@@ -31,11 +31,11 @@ const MainScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <BottomTab activeTab={activeTab} onTabPress={setActiveTab} />
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.screenContainer}>
         {renderActiveScreen()}
       </View>
+      <BottomTab activeTab={activeTab} onTabPress={setActiveTab} />
     </SafeAreaView>
   );
 };

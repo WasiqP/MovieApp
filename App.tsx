@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Onboarding
-import Splash from './src/onboarding/Splash.tsx';
+import Splash from './src/onboarding/Splash.tsx'; 
 import Onboarding01 from './src/onboarding/Onboarding01.tsx';
 import Onboarding02 from './src/onboarding/Onboarding02.tsx';
 import Onboarding03 from './src/onboarding/Onboarding03.tsx';
@@ -19,6 +19,8 @@ import Home from './src/main/Home.tsx';
 import Movies from './src/main/Movies.tsx';
 import Favourites from './src/main/Favourites.tsx';
 import Profile from './src/main/Profile.tsx';
+import ContactUs from './src/main/ContactUs.tsx';
+import AboutUs from './src/main/AboutUs.tsx';
 import AnimeDetails from './src/main/AnimeDetails';
 
 export type RootStackParamList = {
@@ -34,6 +36,8 @@ export type RootStackParamList = {
   Movies: undefined;
   Favourites: undefined;
   Profile: undefined;
+  ContactUs: undefined;
+  AboutUs: undefined;
   AnimeDetails: { animeId: string } | undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -44,7 +48,16 @@ const App = () => {
     <SafeAreaProvider>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
+        <Stack.Navigator 
+          initialRouteName="Splash" 
+          screenOptions={{ 
+            headerShown: false,
+            animation: 'slide_from_right',
+            animationDuration: 300,
+            gestureEnabled: true,
+            gestureDirection: 'horizontal',
+          }}
+        >
           <Stack.Screen name="Splash" component={Splash} />
           <Stack.Screen name="GetStarted" component={GetStarted} />
           <Stack.Screen name="Onboarding01" component={Onboarding01} />
@@ -57,6 +70,8 @@ const App = () => {
           <Stack.Screen name="Movies" component={Movies} />
           <Stack.Screen name="Favourites" component={Favourites} />
           <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen name="ContactUs" component={ContactUs} />
+          <Stack.Screen name="AboutUs" component={AboutUs} />
           <Stack.Screen name="AnimeDetails" component={AnimeDetails} />
         </Stack.Navigator>
       </NavigationContainer>
