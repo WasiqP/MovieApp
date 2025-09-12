@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # Backend API
+  api:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MONGODB_URI=mongodb://mongo:27017/movieapp
+      - REDIS_URL=redis://redis:6379
+      - TMDB_API_KEY=${TMDB_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000}
+    depends_on:
+      - mongo
+      - redis
+    restart: unless-stopped
+    networks:
+      - movieapp-network
+
+  # MongoDB Database
+  mongo:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: unless-stopped
+    networks:
+      - movieapp-network
+
+  # Redis Cache
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - movieapp-network
+
+  # MongoDB Express (Database Admin)
+  mongo-express:
+    image: mongo-express:1.0.0
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=password
+    depends_on:
+      - mongo
+    restart: unless-stopped
+    networks:
+      - movieapp-network
+
+volumes:
+  mongo_data:
+  redis_data:
+
+networks:
+  movieapp-network:
+    driver: bridge
+

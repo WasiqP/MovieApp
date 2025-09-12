@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TextInput, Pressable, ScrollView, Animated } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, TextInput, Pressable, ScrollView, Animated, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../theme/colors';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -7,37 +7,29 @@ import { RootStackParamList } from '../../App.tsx';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import DrawerMenu from '../components/DrawerMenu';
+import { usePopularMovies, useTrendingMovies, useSearchMovies } from '../hooks/useMovies';
+import { Movie } from '../services/api';
 
-interface Movie { id: string; title: string; image: string; badge?: string; rating?: string; name?: string }
-
-const popularMock = [
-  { id: '1', title: 'Oppenheimer', image: 'https://placehold.co/160x220/png', badge: '#1' },
-  { id: '2', title: 'Spider-Man: Across...', image: 'https://placehold.co/160x220/png', badge: '#2' },
-  { id: '3', title: 'Barbie', image: 'https://placehold.co/160x220/png', badge: '#3' },
-  { id: '4', title: 'Guardians of the Galaxy', image: 'https://placehold.co/160x220/png', badge: '#4' },
-];
-
-const latestMock = Array.from({ length: 12 }).map((_, i) => ({
-  id: String(i + 1),
-  title: ['The Batman', 'Top Gun: Maverick', 'Dune'][i % 3],
-  image: 'https://placehold.co/120x160/png',
-  rating: '8.65',
-  name: ['Action', 'Drama', 'Sci-Fi'][i % 3],
-}));
+// Remove old interface and mock data - using API data now
 
 const genres = ['Action', 'Drama', 'Comedy', 'Thriller'];
 
 const Home: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
 
+  // API hooks
+  const { movies: popularMovies, loading: popularLoading, error: popularError } = usePopularMovies(1);
+  const { movies: trendingMovies, loading: trendingLoading, error: trendingError } = useTrendingMovies(1);
+  const { movies: searchResults, loading: searchLoading } = useSearchMovies(searchQuery);
+
   useEffect(() => {
-    // Simulate loading time for smooth transition
-    const timer = setTimeout(() => {
-      setIsLoading(false);
+    // Start animation when data is loaded
+    if (!popularLoading && !trendingLoading) {
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
@@ -50,19 +42,55 @@ const Home: React.FC = () => {
           useNativeDriver: true,
         })
       ]).start();
-    }, 300);
+    }
+  }, [popularLoading, trendingLoading, fadeAnim, slideAnim]);
 
-    return () => clearTimeout(timer);
-  }, [fadeAnim, slideAnim]);
+  // Handle search
+  const handleSearch = (text: string) => {
+    setSearchQuery(text);
+    setIsSearching(text.length > 0);
+  };
+
+  // Get display data based on search state
+  const getDisplayMovies = () => {
+    if (isSearching && searchQuery.length > 0) {
+      return searchResults;
+    }
+    return trendingMovies;
+  };
 
   console.log('Home component rendered, drawerVisible:', drawerVisible);
 
-  const renderPopularItem = ({ item }: { item: Movie }) => (
+  const renderPopularItem = ({ item, index }: { item: Movie; index: number }) => (
     <Pressable onPress={() => navigation.navigate('AnimeDetails', { animeId: String(item.id) })} style={styles.popularCard}>
-      <Image source={{ uri: item.image }} style={styles.popularImage} />
+      <Image 
+        source={{ 
+          uri: item.posterPath || 'https://placehold.co/160x220/png' 
+        }} 
+        style={styles.popularImage} 
+      />
       <View style={styles.popularGradient} />
-      <View style={styles.popularBadge}><Text style={styles.popularBadgeText}>{item.badge}</Text></View>
+      <View style={styles.popularBadge}>
+        <Text style={styles.popularBadgeText}>#{index + 1}</Text>
+      </View>
       <Text style={styles.popularTitle} numberOfLines={1}>{item.title}</Text>
+    </Pressable>
+  );
+
+  const renderTrendingItem = ({ item }: { item: Movie }) => (
+    <Pressable 
+      key={item.id} 
+      style={styles.latestCard} 
+      onPress={() => navigation.navigate('AnimeDetails', { animeId: String(item.id) })}
+    >
+      <Image 
+        source={{ 
+          uri: item.posterPath || 'https://placehold.co/120x160/png' 
+        }} 
+        style={styles.latestImage} 
+      />
+      <Text style={styles.latestTitle} numberOfLines={2}>{item.title}</Text>
+      <Text style={styles.latestRating}>⭐ {item.voteAverage.toFixed(1)}</Text>
     </Pressable>
   );
 
@@ -99,14 +127,22 @@ const Home: React.FC = () => {
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
           {/* Popular Section */}
           <Text style={styles.sectionTitle}>Popular</Text>
-        <FlatList
-          horizontal
-          data={popularMock}
-          keyExtractor={(item) => item.id}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.popularList}
-          renderItem={renderPopularItem}
-        />
+        {popularLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.primary} />
+            <Text style={styles.loadingText}>Loading popular movies...</Text>
+          </View>
+        ) : (
+          <FlatList
+            horizontal
+            data={popularMovies}
+            keyExtractor={(item, index) => `popular-${item.id}-${index}`}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.popularList}
+            renderItem={renderPopularItem}
+            scrollEnabled={false}
+          />
+        )}
         <View style={styles.dotsRow}>
           <View style={[styles.dot, styles.dotActive]} />
           <View style={styles.dot} />
@@ -115,7 +151,13 @@ const Home: React.FC = () => {
 
         {/* Search */}
         <View style={styles.searchWrap}>
-          <TextInput placeholder="Find what you are looking for?" placeholderTextColor={theme.textDim} style={styles.searchInput} />
+          <TextInput 
+            placeholder="Find what you are looking for?" 
+            placeholderTextColor={theme.textDim} 
+            style={styles.searchInput}
+            value={searchQuery}
+            onChangeText={handleSearch}
+          />
           <Text style={styles.searchIcon}>⌕</Text>
         </View>
 
@@ -128,16 +170,33 @@ const Home: React.FC = () => {
           ))}
         </View>
 
-        {/* Latest */}
-  <Text style={[styles.sectionTitle, { marginTop: 22 }]}>Trending Movies</Text>
-        <View style={styles.latestGrid}>
-          {latestMock.map(item => (
-            <Pressable key={item.id} style={styles.latestCard} onPress={() => navigation.navigate('AnimeDetails', { animeId: String(item.id) })}>
-              <Image source={{ uri: item.image }} style={styles.latestImage} />
-              <Text style={styles.latestTitle} numberOfLines={2}>{item.title}</Text>
-            </Pressable>
-          ))}
-        </View>
+        {/* Trending Movies */}
+        <Text style={[styles.sectionTitle, { marginTop: 22 }]}>
+          {isSearching ? `Search Results for "${searchQuery}"` : 'Trending Movies'}
+        </Text>
+        
+        {trendingLoading || searchLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.primary} />
+            <Text style={styles.loadingText}>Loading movies...</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={getDisplayMovies()}
+            renderItem={renderTrendingItem}
+            keyExtractor={(item, index) => `trending-${item.id}-${index}`}
+            numColumns={2}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.latestGrid}
+            scrollEnabled={false}
+          />
+        )}
+        
+        {popularError && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>Failed to load movies: {popularError}</Text>
+          </View>
+        )}
         </Animated.View>
       </ScrollView>
       
@@ -221,10 +280,36 @@ const styles = StyleSheet.create({
   genresRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 16 },
   genreChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 30, backgroundColor: '#F4F4F4' },
   genreText: { fontSize: 11, fontFamily: 'Poppins-Medium', color: theme.text },
-  latestGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: 14 },
-  latestCard: { width: '31%', marginBottom: 22 },
-  latestImage: { width: '100%', height: 110, borderRadius: 12, backgroundColor: '#ddd' },
-  latestTitle: { fontSize: 10, color: theme.text, marginTop: 6, fontFamily: 'Poppins-Medium' },
+  latestGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: 14, paddingHorizontal: 12 },
+  latestCard: { width: '46%', marginBottom: 24, marginHorizontal: 4 },
+  latestImage: { width: '100%', height: 160, borderRadius: 12, backgroundColor: '#ddd' },
+  latestTitle: { fontSize: 12, color: theme.text, marginTop: 8, fontFamily: 'Poppins-Medium' },
+  latestRating: { fontSize: 10, color: theme.primary, marginTop: 4, fontFamily: 'Poppins-Medium' },
+  loadingContainer: { 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    paddingVertical: 40 
+  },
+  loadingText: { 
+    marginTop: 10, 
+    fontSize: 12, 
+    color: theme.textDim, 
+    fontFamily: 'Poppins-Regular' 
+  },
+  errorContainer: { 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    paddingVertical: 20,
+    backgroundColor: '#ffebee',
+    borderRadius: 8,
+    marginVertical: 10
+  },
+  errorText: { 
+    fontSize: 12, 
+    color: '#d32f2f', 
+    fontFamily: 'Poppins-Medium',
+    textAlign: 'center'
+  },
 });
 
 export default Home;
