@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, View, StatusBar } from 'react-native';
+import { Animated, StyleSheet, Text, View, StatusBar, Image } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App.tsx';
-import Logo from '../assets/Logo';
 import { useTheme } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
@@ -22,18 +21,23 @@ const Splash: React.FC<Props> = ({ navigation }) => {
   }, [fade, scale, navigation]);
 
   return (
-    <View style={[styles.container, { backgroundColor: t.background }]}>      
+    <View style={[styles.container, { backgroundColor: '#000000' }]}>      
       <StatusBar barStyle="light-content" />
       <Animated.View style={{ opacity: fade, transform: [{ scale }] }}>
-        <Logo size={120} />
+        <Image 
+          source={require('../../assets/images/MovieAppLogo.png')} 
+          style={styles.logo}
+          resizeMode="contain"
+        />
       </Animated.View>
-  <Animated.Text style={[styles.brand, { color: t.primary, opacity: fade }]}>AirCorn</Animated.Text>
+      <Animated.Text style={[styles.brand, { color: '#FFFFFF', opacity: fade }]}>AirCorn</Animated.Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  logo: { width: 120, height: 120 },
   brand: { marginTop: 24, fontSize: 32, fontWeight: '800', letterSpacing: 0.5, fontFamily: 'Poppins-Bold' },
 });
 
